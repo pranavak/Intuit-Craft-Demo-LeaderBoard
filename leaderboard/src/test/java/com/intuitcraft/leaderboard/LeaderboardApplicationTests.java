@@ -2,6 +2,7 @@ package com.intuitcraft.leaderboard;
 
 import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.intuitcraft.leaderboard.entity.playerScore;
 import com.intuitcraft.leaderboard.exceptions.CacheInitializationException;
 import com.intuitcraft.leaderboard.exceptions.LeaderboardNotInitializedException;
 import com.intuitcraft.leaderboard.exceptions.MessageQueueFailureException;
+import com.intuitcraft.leaderboard.repository.playerScoreRepository;
 import com.intuitcraft.leaderboard.services.cacheService;
 import com.intuitcraft.leaderboard.services.leaderBoardService;
 import com.intuitcraft.leaderboard.services.client.newDataProducerService;
@@ -29,6 +31,9 @@ public class LeaderboardApplicationTests {
 	@Autowired
 	cacheService<playerScore> cacheServiceTest;
 	
+	@Autowired
+	playerScoreRepository scoreRepository;
+	
 	@Test
 	public void allServiceIntegrityTest() throws InterruptedException {
 		try {
@@ -41,7 +46,6 @@ public class LeaderboardApplicationTests {
 		try {
 			producer.addDataToQueue(new playerScore("Goutam", 2000));
 		} catch (MessageQueueFailureException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 		Thread.sleep(5);
@@ -50,10 +54,14 @@ public class LeaderboardApplicationTests {
 				System.out.println(p);
 			}
 		} catch (LeaderboardNotInitializedException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 		//assertEquals(outputList, cacheServiceTest.getTopNplayers());
+	}
+	
+	@After
+	public void tearDown() {
+		scoreRepository.deleteAll();
 	}
 
 }

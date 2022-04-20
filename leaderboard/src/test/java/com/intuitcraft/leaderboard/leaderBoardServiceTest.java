@@ -1,5 +1,8 @@
 package com.intuitcraft.leaderboard;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +22,24 @@ public class leaderBoardServiceTest {
 	@Test
 	public void test() {
 		try {
+			int i = 0;
+			playerScore[] outputList = { new playerScore("OP", 700), new playerScore("RP", 200), new playerScore("GB", 100)};
 			leaderBoard.createBoard(3);
-			for (playerScore p : leaderBoard.getTopNPlayers())
-				System.out.println(p);
+			for (playerScore p : leaderBoard.getTopNPlayers()) {
+				assertEquals(p, outputList[i++]);
+			}
+				
 			leaderBoard.publish(new playerScore("GB", 5000));
-			System.out.println("************");
-			for (playerScore p : leaderBoard.getTopNPlayers())
-				System.out.println(p);
+			outputList[0] = new playerScore("GB", 5000);
+			outputList[1] = new playerScore("IS", 500);
+			outputList[2] = new playerScore("RP", 200);
+			i = 0;
+			Thread.sleep(20);
+			for (playerScore p : leaderBoard.getTopNPlayers()) {
+				assertEquals(p, outputList[i++]);
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 

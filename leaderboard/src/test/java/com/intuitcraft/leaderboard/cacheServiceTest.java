@@ -45,7 +45,6 @@ public class cacheServiceTest {
 		try {
 			c.initialize(3, inputList);
 		} catch (CacheInitializationException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 		assertEquals(outputList, c.getTopNplayers());
@@ -53,7 +52,6 @@ public class cacheServiceTest {
 		try {
 			c.addtoCache(p5);
 		} catch (CacheUpdateFailureException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 		outputList = new ArrayList<playerScore>();

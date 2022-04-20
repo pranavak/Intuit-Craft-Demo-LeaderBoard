@@ -2,6 +2,7 @@ package com.intuitcraft.leaderboard;
 
 import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,7 @@ public class scoreIngestorTest {
 				try {
 					scoreIngestor.publish(new playerScore("OP", 700));
 				} catch (DatabaseStorageException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					fail(e.getMessage());
 				}
 			} catch (LeaderboardUpdateFailureException e) {
 				fail(e.getMessage());
@@ -52,8 +52,7 @@ public class scoreIngestorTest {
 					scoreIngestor.publish(new playerScore("OP", 600));
 					scoreIngestor.publish(new playerScore("GB", 700));
 				} catch (DatabaseStorageException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					fail(e.getMessage());
 				}
 			} catch (LeaderboardUpdateFailureException e) {
 				fail(e.getMessage());
@@ -64,8 +63,13 @@ public class scoreIngestorTest {
 				System.out.println(p);
 		} catch (LeaderboardNotInitializedException e) {
 			fail(e.getMessage());
-		}
-		
+		}	
+	}
+	
+	@After
+	public void tearDown() {
+		System.out.println("Deleting the table");
+		scoreRepository.deleteAll();
 	}
 
 }

@@ -38,6 +38,9 @@ public class playerScore implements Comparable<playerScore> {
 	}
 
 	public int compareTo(playerScore p) {
+		if (this.score == p.getScore()) {
+			return this.playerId.compareTo(p.getPlayerId());
+		}
 		return Long.compare(this.score, p.getScore());
 	}
 	
