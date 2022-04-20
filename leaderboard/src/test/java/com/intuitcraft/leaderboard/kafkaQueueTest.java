@@ -28,5 +28,4 @@ public class kafkaQueueTest {
 			fail(e.getMessage());
 		}
 	}
-
 }

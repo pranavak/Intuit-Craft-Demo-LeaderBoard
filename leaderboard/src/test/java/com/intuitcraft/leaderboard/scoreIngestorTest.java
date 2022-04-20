@@ -1,5 +1,6 @@
 package com.intuitcraft.leaderboard;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
@@ -41,7 +42,7 @@ public class scoreIngestorTest {
 				fail(e.getMessage());
 			}
 			for (playerScore p : leaderBoard.getTopNPlayers())
-				System.out.println(p);
+				assertEquals(p, new playerScore("OP", 700));
 			try {
 				leaderBoard.createBoard(3);
 			} catch (CacheInitializationException e) {
@@ -51,6 +52,11 @@ public class scoreIngestorTest {
 				try {
 					scoreIngestor.publish(new playerScore("OP", 600));
 					scoreIngestor.publish(new playerScore("GB", 700));
+					playerScore[] outputList = { new playerScore("OP", 700), new playerScore("GB", 700), new playerScore("IS", 500)};
+					int i = 0;
+					for (playerScore p : leaderBoard.getTopNPlayers()) {
+						assertEquals(p, outputList[i++]);
+					}
 				} catch (DatabaseStorageException e) {
 					fail(e.getMessage());
 				}
@@ -68,7 +74,6 @@ public class scoreIngestorTest {
 	
 	@After
 	public void tearDown() {
-		System.out.println("Deleting the table");
 		scoreRepository.deleteAll();
 	}
 

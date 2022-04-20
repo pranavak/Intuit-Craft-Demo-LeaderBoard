@@ -1,5 +1,6 @@
 package com.intuitcraft.leaderboard;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
@@ -50,17 +51,26 @@ public class LeaderboardApplicationTests {
 		}
 		Thread.sleep(5);
 		try {
+			playerScore[] outputList = {new playerScore("Goutam", 2000),
+					new playerScore("IS", 500), new playerScore("RP", 200), new playerScore("GB", 100),
+					new playerScore("IM", 10)};
+			int i = 0;
 			for (playerScore p : leaderBoard.getTopNPlayers()) {
-				System.out.println(p);
+				assertEquals(outputList[i++], p);
 			}
 		} catch (LeaderboardNotInitializedException e) {
 			fail(e.getMessage());
 		}
-		//assertEquals(outputList, cacheServiceTest.getTopNplayers());
 	}
 	
 	@After
 	public void tearDown() {
+		try {
+			Thread.sleep(5);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		scoreRepository.deleteAll();
 	}
 

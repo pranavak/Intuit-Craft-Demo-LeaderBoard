@@ -3,6 +3,7 @@ package com.intuitcraft.leaderboard;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.repository.playerScoreRepository;
 import com.intuitcraft.leaderboard.services.leaderBoardService;
 
 @SpringBootTest(classes = LeaderboardApplication.class)
@@ -18,6 +20,9 @@ public class leaderBoardServiceTest {
 
 	@Autowired
 	leaderBoardService leaderBoard;
+	
+	@Autowired
+	playerScoreRepository scoreRepository;
 	
 	@Test
 	public void test() {
@@ -41,6 +46,17 @@ public class leaderBoardServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	@After
+	public void tearDown() {
+		try {
+			Thread.sleep(5);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		scoreRepository.deleteAll();
 	}
 
 }
