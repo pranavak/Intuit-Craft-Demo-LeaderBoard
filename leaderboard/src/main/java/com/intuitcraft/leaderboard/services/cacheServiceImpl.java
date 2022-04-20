@@ -43,12 +43,12 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 			playerScore scoreToBeUpdated = playerToScore.get(score.getPlayerId());
 			
 			if (scoreToBeUpdated.getScore() < score.getScore()) {
-				//System.out.println("Updating " + scoreToBeUpdated.getPlayerId() + " to " + score.getScore());
+				System.out.println("Updating " + scoreToBeUpdated.getPlayerId() + " to " + score.getScore());
 				minHeap.remove(scoreToBeUpdated);
 				playerToScore.put(score.getPlayerId(), score);
 				minHeap.add(score);
-				return;
 			}
+			return;
 		}
 		if (minHeap.size() < topN) {
 			minHeap.add(score);

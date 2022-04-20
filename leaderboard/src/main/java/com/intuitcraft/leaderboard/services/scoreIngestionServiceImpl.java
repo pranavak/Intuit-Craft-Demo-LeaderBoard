@@ -20,7 +20,7 @@ public class scoreIngestionServiceImpl implements scoreIngestionToLeaderBoards, 
 
 	public void publishToStore(playerScore newScore) {
 		Optional<playerScore> scoreAlreadyPresent = scoreRepository.findById(newScore.getPlayerId());
-		if (scoreAlreadyPresent.isPresent() && scoreAlreadyPresent.get().getScore() > newScore.getScore()) {
+		if (scoreAlreadyPresent.isPresent() && scoreAlreadyPresent.get().getScore() >= newScore.getScore()) {
 			return;
 		}
 		scoreRepository.save(newScore);

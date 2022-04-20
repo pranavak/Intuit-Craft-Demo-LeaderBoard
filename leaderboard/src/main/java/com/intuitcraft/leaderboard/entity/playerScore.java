@@ -45,4 +45,10 @@ public class playerScore implements Comparable<playerScore> {
 	public String toString() {
 		return "{" + playerId + " " + score + "}";
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return this.playerId.equals(((playerScore)o).getPlayerId())
+				&& this.score == ((playerScore)o).getScore();
+	}
 }
