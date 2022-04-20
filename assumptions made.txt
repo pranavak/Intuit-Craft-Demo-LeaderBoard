@@ -1,0 +1,19 @@
+1> The score published by gaming service is always for a registered user/proper guest user and valid score. We don't need
+to validate the score or player which is published by gaming service.
+2> When two players have the same score, the player ranking is done lexicographically according to user name, 
+player usernames are unique.
+3> For each player data there won't be any simultaenous update - one player plays from one device at a time.
+4> Scores will be single numerical value and for the leaderboard there will be a fixed number N decided while
+application start according to which the top N scores will be returned with player usernames.
+5> All the APIs exposed are used by the gaming service internally and no API is exposed publicly so we are assuming here
+that the APIs need no data sanity check and will be used mostly as-expected sequentially.
+6> There is only one leaderboard for the time being however if needed the number of leaderboards can be extended.
+7> The traffic involved in the services for now is within the range of a single server range - but will be scaled 
+	as per need
+
+Flow or Usage :
+
+1> Admins create and register a leaderboard - while creation if there is already internal data they are also processed
+2> As soon as leaderboard is registered, it becomes ready to ingest score and can ingest the scores
+3> As and when score is ingested after a game is finished, the leaderboard is updated
+4> At any point of time, after leaderboard registration, the top N player details can be fetched.
