@@ -2,6 +2,7 @@ package com.intuitcraft.leaderboard.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ public class scoreIngestionServiceImpl implements scoreIngestionToLeaderBoards, 
 	playerScoreRepository scoreRepository;
 
 	public void publishToStore(playerScore newScore) {
+		Optional<playerScore> scoreAlreadyPresent = scoreRepository.findById(newScore.getPlayerId());
+		if (scoreAlreadyPresent.isPresent() && scoreAlreadyPresent.get().getScore() > newScore.getScore()) {
+			return;
+		}
 		scoreRepository.save(newScore);
 	}
 

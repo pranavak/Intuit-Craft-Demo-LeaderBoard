@@ -7,28 +7,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
-import com.intuitcraft.leaderboard.services.leaderBoardService;
+import com.intuitcraft.leaderboard.services.newDataConsumerService;
+import com.intuitcraft.leaderboard.services.client.newDataProducerService;
 
 @SpringBootTest(classes = LeaderboardApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class leaderBoardServiceTest {
+public class kafkaQueueTest {
 
 	@Autowired
-	leaderBoardService leaderBoard;
-	
+	newDataProducerService<playerScore> producer;
+
 	@Test
 	public void test() {
-		try {
-			leaderBoard.createBoard(3);
-			for (playerScore p : leaderBoard.getTopNPlayers())
-				System.out.println(p);
-			leaderBoard.publish(new playerScore("GB", 5000));
-			System.out.println("************");
-			for (playerScore p : leaderBoard.getTopNPlayers())
-				System.out.println(p);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		producer.addDataToQueue(new playerScore("GB", 100));
 	}
 
 }
