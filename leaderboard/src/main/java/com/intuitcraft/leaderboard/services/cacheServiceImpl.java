@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
@@ -19,6 +21,8 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 	int topN;
 	PriorityQueue<playerScore> minHeap;
 	Map<String, playerScore> playerToScore;
+	
+	Logger logger = LoggerFactory.getLogger(cacheServiceImpl.class);
 	
 	public void initialize(int topN, List<playerScore> dataSet) throws CacheInitializationException {
 		this.topN = topN;
@@ -39,6 +43,7 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 				}
 			}
 		} catch (Exception e) {
+			logger.error("Failed to initialize cache - " + e.getMessage());
 			throw new CacheInitializationException("Failed to initialize cache");
 		}
 	}
@@ -49,7 +54,7 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 				playerScore scoreToBeUpdated = playerToScore.get(score.getPlayerId());
 				
 				if (scoreToBeUpdated.getScore() < score.getScore()) {
-					System.out.println("Updating " + scoreToBeUpdated.getPlayerId() + " to " + score.getScore());
+					logger.debug("Updating " + scoreToBeUpdated.getPlayerId() + " to " + score.getScore());
 					minHeap.remove(scoreToBeUpdated);
 					playerToScore.put(score.getPlayerId(), score);
 					minHeap.add(score);
@@ -68,6 +73,7 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 				}
 			}
 		} catch (Exception e) {
+			logger.error("Failed to update cache - " + e.getMessage());
 			throw new CacheUpdateFailureException(e.getMessage());
 		}
 		

@@ -2,6 +2,8 @@ package com.intuitcraft.leaderboard.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,16 +22,19 @@ public class leaderBoardController {
 	
 	@Autowired
 	leaderBoardService leaderBoard;
+	
+	Logger logger = LoggerFactory.getLogger(leaderBoardController.class);
 
 	@GetMapping("/getTopScorers")
 	public List<playerScore> getTopScorers() {
 		try {
 			return leaderBoard.getTopNPlayers();
 		} catch (LeaderboardNotInitializedException e) {
-			e.printStackTrace();
+			logger.error("Leaderboard not initialized - " + e.getMessage());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Please register/create LeaderBoard first");
 		} catch (Exception e) {
+			logger.error("Couldn't get top scores - " + e.getMessage());
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
@@ -39,6 +44,7 @@ public class leaderBoardController {
 		try {
 			leaderBoard.createBoard(in.getLeaderBoardSize());
 		} catch (Exception e) {
+			logger.error("Leaderboard creation failed - " + e.getMessage());
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}

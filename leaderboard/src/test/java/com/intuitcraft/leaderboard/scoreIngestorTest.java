@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
 import com.intuitcraft.leaderboard.exceptions.CacheInitializationException;
+import com.intuitcraft.leaderboard.exceptions.DatabaseStorageException;
 import com.intuitcraft.leaderboard.exceptions.LeaderboardNotInitializedException;
 import com.intuitcraft.leaderboard.exceptions.LeaderboardUpdateFailureException;
 import com.intuitcraft.leaderboard.repository.playerScoreRepository;
@@ -30,7 +31,12 @@ public class scoreIngestorTest {
 	public void test() {
 		try {
 			try {
-				scoreIngestor.publish(new playerScore("OP", 700));
+				try {
+					scoreIngestor.publish(new playerScore("OP", 700));
+				} catch (DatabaseStorageException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (LeaderboardUpdateFailureException e) {
 				fail(e.getMessage());
 			}
@@ -42,8 +48,13 @@ public class scoreIngestorTest {
 				fail(e.getMessage());
 			}
 			try {
-				scoreIngestor.publish(new playerScore("OP", 600));
-				scoreIngestor.publish(new playerScore("GB", 700));
+				try {
+					scoreIngestor.publish(new playerScore("OP", 600));
+					scoreIngestor.publish(new playerScore("GB", 700));
+				} catch (DatabaseStorageException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (LeaderboardUpdateFailureException e) {
 				fail(e.getMessage());
 			}

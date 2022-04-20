@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.exceptions.DatabaseStorageException;
 import com.intuitcraft.leaderboard.exceptions.LeaderboardUpdateFailureException;
 import com.intuitcraft.leaderboard.repository.playerScoreRepository;
 
@@ -21,12 +22,17 @@ public class scoreIngestionServiceImpl implements scoreIngestionToLeaderBoards, 
 	@Autowired
 	playerScoreRepository scoreRepository;
 
-	public void publishToStore(playerScore newScore) {
-		Optional<playerScore> scoreAlreadyPresent = scoreRepository.findById(newScore.getPlayerId());
-		if (scoreAlreadyPresent.isPresent() && scoreAlreadyPresent.get().getScore() >= newScore.getScore()) {
-			return;
+	public void publishToStore(playerScore newScore) throws DatabaseStorageException {
+		try {
+			Optional<playerScore> scoreAlreadyPresent = scoreRepository.findById(newScore.getPlayerId());
+			if (scoreAlreadyPresent.isPresent() && scoreAlreadyPresent.get().getScore() >= newScore.getScore()) {
+				return;
+			}
+			scoreRepository.save(newScore);
+		} catch (Exception e) {
+			throw new DatabaseStorageException("Could not publish data to storage");
 		}
-		scoreRepository.save(newScore);
+		
 	}
 
 	public void registerLeaderBoard(leaderBoardService leaderBoard) {
@@ -40,7 +46,7 @@ public class scoreIngestionServiceImpl implements scoreIngestionToLeaderBoards, 
 	}
 
 	@Transactional
-	public void publish(playerScore newScore) throws LeaderboardUpdateFailureException {
+	public void publish(playerScore newScore) throws LeaderboardUpdateFailureException, DatabaseStorageException {
 		publishToLeaderBoards(newScore);
 		publishToStore(newScore);
 	}

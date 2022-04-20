@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,8 @@ public class leaderBoardServiceImpl implements leaderBoardService {
 	
 	boolean leaderBoardInitialized;
 	
+	Logger logger = LoggerFactory.getLogger(leaderBoardServiceImpl.class);
+	
 	@PostConstruct
 	public void createBoard() throws LeaderboardNotInitializedException {
 		initializeBoard(constants.DEFAULT_LEADERBOARD_SIZE);
@@ -41,9 +45,9 @@ public class leaderBoardServiceImpl implements leaderBoardService {
 			scoreIngestor.registerLeaderBoard(this);
 			leaderBoardInitialized = true;
 		} catch (CacheInitializationException e) {
+			logger.error("Leader Board Initialization Failed - " + e.getMessage());
 			throw new LeaderboardNotInitializedException(e.getMessage());
 		}
-		
 	}
 	
 	public void createBoard(int topN) throws LeaderboardNotInitializedException {
@@ -52,6 +56,7 @@ public class leaderBoardServiceImpl implements leaderBoardService {
 
 	public List<playerScore> getTopNPlayers() throws LeaderboardNotInitializedException {
 		if (!leaderBoardInitialized) {
+			logger.error("Leader Board Not Initialized - Cannot retrieve top players");
 			throw new LeaderboardNotInitializedException("LeaderBoard not yet initialized");
 		}
 		return cache.getTopNplayers();
@@ -61,7 +66,7 @@ public class leaderBoardServiceImpl implements leaderBoardService {
 		try {
 			cache.addtoCache(newScore);
 		} catch (CacheUpdateFailureException e) {
-			// TODO Auto-generated catch block
+			logger.error("Leader Board Update failed - " + e.getMessage());
 			throw new LeaderboardUpdateFailureException(e.getMessage());
 		}
 	}
