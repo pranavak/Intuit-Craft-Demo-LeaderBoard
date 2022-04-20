@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.exceptions.LeaderboardUpdateFailureException;
 import com.intuitcraft.leaderboard.repository.playerScoreRepository;
 
 @Service
@@ -30,13 +33,14 @@ public class scoreIngestionServiceImpl implements scoreIngestionToLeaderBoards, 
 		leaderBoards.add(leaderBoard);
 	}
 
-	public void publishToLeaderBoards(playerScore newScore) {
+	public void publishToLeaderBoards(playerScore newScore) throws LeaderboardUpdateFailureException {
 		for (leaderBoardService leaderBoard : leaderBoards) {
 			leaderBoard.publish(newScore);
 		}
 	}
 
-	public void publish(playerScore newScore) {
+	@Transactional
+	public void publish(playerScore newScore) throws LeaderboardUpdateFailureException {
 		publishToLeaderBoards(newScore);
 		publishToStore(newScore);
 	}

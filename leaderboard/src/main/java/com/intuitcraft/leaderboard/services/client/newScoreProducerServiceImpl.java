@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.intuitcraft.leaderboard.constants.constants;
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.exceptions.MessageQueueFailureException;
 
 @Service
 public class newScoreProducerServiceImpl implements newDataProducerService<playerScore> {
@@ -13,10 +14,13 @@ public class newScoreProducerServiceImpl implements newDataProducerService<playe
 	@Autowired
 	private KafkaTemplate<String, playerScore> kafkaTemplate;
 
-	public void addDataToQueue(playerScore newScore) {
-		kafkaTemplate.send(constants.KafkaTopic, newScore);
-		/*for (int i = 0; i < 20; i++)
-			System.out.println("Sent message " + newScore);*/
+	public void addDataToQueue(playerScore newScore) throws MessageQueueFailureException {
+		try {
+			kafkaTemplate.send(constants.KAFKA_TOPIC, newScore);
+		} catch (Exception e) {
+			throw new MessageQueueFailureException(e.getMessage());
+		}
+		
 	}
 
 }

@@ -10,6 +10,8 @@ import java.util.PriorityQueue;
 import org.springframework.stereotype.Service;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.exceptions.CacheInitializationException;
+import com.intuitcraft.leaderboard.exceptions.CacheUpdateFailureException;
 
 @Service
 public class cacheServiceImpl implements cacheService<playerScore> {
@@ -18,11 +20,42 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 	PriorityQueue<playerScore> minHeap;
 	Map<String, playerScore> playerToScore;
 	
-	public void initialize(int topN, List<playerScore> dataSet) {
+	public void initialize(int topN, List<playerScore> dataSet) throws CacheInitializationException {
 		this.topN = topN;
-		minHeap = new PriorityQueue<playerScore>();
-		playerToScore = new HashMap<String, playerScore>();
-		for (playerScore score : dataSet) {
+		try {
+			minHeap = new PriorityQueue<playerScore>();
+			playerToScore = new HashMap<String, playerScore>();
+			for (playerScore score : dataSet) {
+				if (minHeap.size() < topN) {
+					minHeap.add(score);
+					playerToScore.put(score.getPlayerId(), score);
+				} else {
+					if (score.getScore() > minHeap.peek().getScore()) {
+						playerScore removedScore = minHeap.poll();
+						minHeap.add(score);
+						playerToScore.remove(removedScore.getPlayerId());
+						playerToScore.put(score.getPlayerId(), score);
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new CacheInitializationException("Failed to initialize cache");
+		}
+	}
+
+	public void addtoCache(playerScore score) throws CacheUpdateFailureException {
+		try {
+			if (playerToScore.containsKey(score.getPlayerId())) {
+				playerScore scoreToBeUpdated = playerToScore.get(score.getPlayerId());
+				
+				if (scoreToBeUpdated.getScore() < score.getScore()) {
+					System.out.println("Updating " + scoreToBeUpdated.getPlayerId() + " to " + score.getScore());
+					minHeap.remove(scoreToBeUpdated);
+					playerToScore.put(score.getPlayerId(), score);
+					minHeap.add(score);
+				}
+				return;
+			}
 			if (minHeap.size() < topN) {
 				minHeap.add(score);
 				playerToScore.put(score.getPlayerId(), score);
@@ -34,33 +67,10 @@ public class cacheServiceImpl implements cacheService<playerScore> {
 					playerToScore.put(score.getPlayerId(), score);
 				}
 			}
+		} catch (Exception e) {
+			throw new CacheUpdateFailureException(e.getMessage());
 		}
 		
-	}
-
-	public void addtoCache(playerScore score) {
-		if (playerToScore.containsKey(score.getPlayerId())) {
-			playerScore scoreToBeUpdated = playerToScore.get(score.getPlayerId());
-			
-			if (scoreToBeUpdated.getScore() < score.getScore()) {
-				System.out.println("Updating " + scoreToBeUpdated.getPlayerId() + " to " + score.getScore());
-				minHeap.remove(scoreToBeUpdated);
-				playerToScore.put(score.getPlayerId(), score);
-				minHeap.add(score);
-			}
-			return;
-		}
-		if (minHeap.size() < topN) {
-			minHeap.add(score);
-			playerToScore.put(score.getPlayerId(), score);
-		} else {
-			if (score.getScore() > minHeap.peek().getScore()) {
-				playerScore removedScore = minHeap.poll();
-				minHeap.add(score);
-				playerToScore.remove(removedScore.getPlayerId());
-				playerToScore.put(score.getPlayerId(), score);
-			}
-		}
 	}
 
 	public List<playerScore> getTopNplayers() {

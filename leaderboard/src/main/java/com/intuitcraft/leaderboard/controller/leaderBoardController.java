@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.intuitcraft.leaderboard.entity.inputForLeaderBoard;
 import com.intuitcraft.leaderboard.entity.playerScore;
-import com.intuitcraft.leaderboard.exceptions.LeaderboardNotInitialized;
+import com.intuitcraft.leaderboard.exceptions.LeaderboardNotInitializedException;
 import com.intuitcraft.leaderboard.services.leaderBoardService;
 
 @RestController
@@ -25,10 +25,12 @@ public class leaderBoardController {
 	public List<playerScore> getTopScorers() {
 		try {
 			return leaderBoard.getTopNPlayers();
-		} catch (LeaderboardNotInitialized e) {
+		} catch (LeaderboardNotInitializedException e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED,
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Please register/create LeaderBoard first");
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
 	
@@ -37,7 +39,7 @@ public class leaderBoardController {
 		try {
 			leaderBoard.createBoard(in.getLeaderBoardSize());
 		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
 }

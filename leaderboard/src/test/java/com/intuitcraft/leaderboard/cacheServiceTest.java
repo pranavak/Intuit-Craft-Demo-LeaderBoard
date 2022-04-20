@@ -1,5 +1,6 @@
 package com.intuitcraft.leaderboard;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.exceptions.CacheInitializationException;
+import com.intuitcraft.leaderboard.exceptions.CacheUpdateFailureException;
 import com.intuitcraft.leaderboard.services.cacheService;
 import com.intuitcraft.leaderboard.services.cacheServiceImpl;
 
@@ -39,10 +42,20 @@ public class cacheServiceTest {
 		outputList.add(p4);
 		outputList.add(p2);
 		
-		c.initialize(3, inputList);
+		try {
+			c.initialize(3, inputList);
+		} catch (CacheInitializationException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
+		}
 		assertEquals(outputList, c.getTopNplayers());
 		playerScore p5 = new playerScore("GB", 550);
-		c.addtoCache(p5);
+		try {
+			c.addtoCache(p5);
+		} catch (CacheUpdateFailureException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
+		}
 		outputList = new ArrayList<playerScore>();
 		outputList.add(p5);
 		outputList.add(p3);

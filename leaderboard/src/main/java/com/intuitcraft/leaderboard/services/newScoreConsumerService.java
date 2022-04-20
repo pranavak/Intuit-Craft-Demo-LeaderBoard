@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.intuitcraft.leaderboard.constants.constants;
 import com.intuitcraft.leaderboard.entity.playerScore;
+import com.intuitcraft.leaderboard.exceptions.LeaderboardUpdateFailureException;
 
 @Service
 public class newScoreConsumerService implements newDataConsumerService<playerScore> {
@@ -13,10 +14,14 @@ public class newScoreConsumerService implements newDataConsumerService<playerSco
 	@Autowired
 	scoreIngestionService scoreIngestor;
 
-	@KafkaListener(topics = constants.KafkaTopic, groupId = constants.kafkaGroupId)
+	@KafkaListener(topics = constants.KAFKA_TOPIC, groupId = constants.KAFKA_GROUP_ID)
 	public void consumeDataFromQueue(playerScore newData) {
 		//for (int i = 0; i < 10; i++)
-		scoreIngestor.publish(newData);
+		try {
+			scoreIngestor.publish(newData);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		System.out.println("Published " + newData);
 			//System.out.println(newData);
 		

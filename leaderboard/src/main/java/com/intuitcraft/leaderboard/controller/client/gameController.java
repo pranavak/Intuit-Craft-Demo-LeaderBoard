@@ -21,7 +21,7 @@ public class gameController {
 		try {
 			scoreIngestor.publish(newScore);
 		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
 }

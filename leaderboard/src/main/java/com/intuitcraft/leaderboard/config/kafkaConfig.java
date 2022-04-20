@@ -10,6 +10,6 @@ import com.intuitcraft.leaderboard.constants.constants;
 public class kafkaConfig {
 	@Bean
 	public NewTopic topic() {
-		return new NewTopic(constants.KafkaTopic, 1, (short) 1);
+		return new NewTopic(constants.KAFKA_TOPIC, 1, (short) 1);
 	}
 }
